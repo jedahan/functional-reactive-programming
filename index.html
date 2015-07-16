@@ -1,0 +1,19 @@
+<h3>hiya</h3>
+
+<script src="http://code.jquery.com/jquery.js"></script>
+<script src="rx.lite.js"></script>
+
+<script>
+const requestStream = Rx.Observable.just('https://api.github.com/users')
+
+requestStream.subscribe( requestUrl => {
+  const responseStream = Rx.Observable.create( observer => {
+    jQuery.getJSON(requestUrl)
+    .done( response => observer.onNext(response) )
+    .fail( (a, b, error) => observer.onError(error) )
+    .always( x => observer.onCompleted() )
+  })
+
+  responseStream.subscribe( response => console.log(response) )
+})
+</script>
