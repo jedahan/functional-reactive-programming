@@ -1,10 +1,17 @@
 <h3>hiya</h3>
+<button class=refresh>refresh</button>
 
 <script src="http://code.jquery.com/jquery.js"></script>
 <script src="rx.lite.js"></script>
 
 <script>
-const requestStream = Rx.Observable.just('https://api.github.com/users')
+const requestOnStartupStream = Rx.Observable.just('https://api.github.com/users')
+
+const refreshButton = document.querySelector('.refresh')
+const refreshClickStream = Rx.Observable.fromEvent(refreshButton, 'click')
+const requestOnRefreshStream = refreshClickStream.map( click => 'https://api.github.com/users?since=' + Math.floor(Math.random()*500) )
+
+const requestStream = Rx.Observable.merge(requestOnStartupStream, requestOnRefreshStream)
 
 const responseStream = requestStream
   .flatMap(requestUrl => Rx.Observable.fromPromise(jQuery.getJSON(requestUrl)))
